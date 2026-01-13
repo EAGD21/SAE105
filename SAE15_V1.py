@@ -60,7 +60,7 @@ def node_to_md(id):
         f.write(txt)
     convert()
 
-
+'''
 def arretbus(ville):
     api_url = "https://overpass-api.de/api/interpreter"
     request = f"""
@@ -97,11 +97,11 @@ def arretbustram(ville):
     response = requests.get( f"https://overpass-api.de/api/interpreter?data={request}") 
     data = response.json()
     return data.get("elements")[0].get("tags").get("total")
-
+'''
 # print(telecharger('https://www.openstreetmap.org/api/0.6/node/3649697385',"fichier.html"))
 #print(get_node_name(1947604611))
 print(node_to_md(12534300884))
-print(arretbus("caen"))
+#print(arretbus("caen"))
 '''
 https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];
     area["wikipedia"="fr:Caen"]->.searchArea;
