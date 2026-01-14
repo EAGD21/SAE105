@@ -1,4 +1,5 @@
 from md_to_html import convert
+import time
 import requests
 
 # https://www.openstreetmap.org/api/0.6/node/1996209696
@@ -60,48 +61,148 @@ def node_to_md(id):
         f.write(txt)
     convert()
 
-'''
-def arretbus(ville):
-    api_url = "https://overpass-api.de/api/interpreter"
-    request = f"""
-    [out:json][timeout:25];
-    area["name"="{ville}"]->.searchArea;
-    node["highway"="bus_stop"](area.searchArea);
-    out geom;
-    """
-    response = requests.get( f"https://overpass-api.de/api/interpreter?data={request}") 
-    if response.status_code == 200:
-        data = response.json()
-        return data.get("elements")[0].get("tags").get("total")
-    return response.status_code
-
-def arretbustram(ville):
-    api_url = "https://overpass-api.de/api/interpreter"
-    request = f"""
-    [out:json][timeout:25];
-    area["name"="{ville}"]->.searchArea;
-    node["highway"="bus_stop"](area.searchArea);
-    out geom;
-    """
-    response = requests.get( f"https://overpass-api.de/api/interpreter?data={request}")
-    data = response.json() 
-    return data.get("elements")[0].get("tags").get("total")
+def evaluation(ville):
+    ville = ville.title()
+    total = 0
+    nb_bus = 0
+    nb_tram = 0
+    nb_metro = 0
     
+    # First Request (Bus stops)
     api_url = "https://overpass-api.de/api/interpreter"
     request = f"""
-    [out:json][timeout:25];
-    area["name"="{ville}"]->.searchArea;
-    node["railway="tram_stop"](area.searchArea);
-    out geom;
+    [out:json][timeout:60];
+    area["name"="{ville}"]["boundary"="administrative"]->.searchArea;
+    node["highway"="bus_stop"](area.searchArea);
+    out count;
     """
-    response = requests.get( f"https://overpass-api.de/api/interpreter?data={request}") 
-    data = response.json()
-    return data.get("elements")[0].get("tags").get("total")
-'''
+    
+    data = None
+    for attempt in range(5):
+        print(f"Tentative de connexion à l'API (Bus)... {attempt + 1}/5")
+        response = requests.get("https://overpass-api.de/api/interpreter", params={'data': request})
+        try:
+            data = response.json()
+            break # Success
+        except requests.exceptions.JSONDecodeError:
+            print(f"Echec (Status {response.status_code})... Retente dans 2 sec")
+            time.sleep(2)
+            
+    if data is None:
+        print("Abandon après 5 tentatives.")
+        return "Erreur API - Serveur indisponible"
+
+    nb_bus = int(data.get("elements")[0].get("tags").get("total"))
+    
+    # Second Request (Tram stops)
+    request = f"""
+    [out:json][timeout:60];
+    area["name"="{ville}"]["boundary"="administrative"]->.searchArea;
+    node["railway"="tram_stop"](area.searchArea);
+    out count;
+    """
+    
+    data = None
+    for attempt in range(5):
+        print(f"Tentative de connexion à l'API (Tram)... {attempt + 1}/5")
+        response = requests.get("https://overpass-api.de/api/interpreter", params={'data': request})
+        try:
+            data = response.json()
+            break # Success
+        except requests.exceptions.JSONDecodeError:
+            print(f"Echec (Status {response.status_code})... Retente dans 2 sec")
+            time.sleep(2)
+
+    if data is None:
+        print("Abandon après 5 tentatives.")
+        return "Erreur API - Serveur indisponible"
+        
+    nb_tram = int(data.get("elements")[0].get("tags").get("total"))
+
+    # Third Request (Metro stops)
+    request = f"""
+    [out:json][timeout:60];
+    area["name"="{ville}"]["boundary"="administrative"]->.searchArea;
+    node["station"="subway"](area.searchArea);
+    out count;
+    """
+    
+    data = None
+    for attempt in range(5):
+        print(f"Tentative de connexion à l'API (Metro)... {attempt + 1}/5")
+        response = requests.get("https://overpass-api.de/api/interpreter", params={'data': request})
+        try:
+            data = response.json()
+            break # Success
+        except requests.exceptions.JSONDecodeError:
+            print(f"Echec (Status {response.status_code})... Retente dans 2 sec")
+            time.sleep(2)
+
+    if data is None:
+        print("Abandon après 5 tentatives.")
+        return "Erreur API - Serveur indisponible"
+        
+    nb_metro = int(data.get("elements")[0].get("tags").get("total"))
+    total = nb_bus + nb_tram + nb_metro
+
+    wp_api_url = "https://fr.wikipedia.org/w/api.php"
+    wp_params = {
+        "action": "query",
+        "prop": "pageprops",
+        "titles": ville,
+        "format": "json",
+        "redirects": 1
+    }
+    
+    headers = {"User-Agent": "CityDataScript/1.0 (contact@example.org)"}
+    
+    wp_res = requests.get(wp_api_url, params=wp_params, headers=headers).json()
+    pages = wp_res.get("query", {}).get("pages", {})
+    
+    qid = None
+    for pid in pages:
+        if "pageprops" in pages[pid]:
+            qid = pages[pid]["pageprops"].get("wikibase_item")
+
+    sparql_url = "https://query.wikidata.org/sparql"
+    query = f"""
+    SELECT?superficie WHERE {{
+        wd:{qid} wdt:P2046?superficie.
+    }}
+    """
+    sparql_res = requests.get(
+        sparql_url, 
+        params={'query': query, 'format': 'json'}, 
+        headers=headers
+    ).json()
+    
+    results = sparql_res.get("results", {}).get("bindings",)
+    superficie = float(results[0].get("superficie").get("value"))
+    scores = total / superficie
+    
+    print(f"Total arrets: {total} (Bus: {nb_bus}, Tram: {nb_tram}, Metro: {nb_metro}), Superficie: {superficie}, Score: {scores}")
+
+    if scores > 50:
+        return "Très bien deservi"
+    elif scores <= 50 and scores > 25:
+        return "Bien deservi"
+    elif scores <= 25 and scores > 15:
+        return "Moyennement deservi"
+    elif scores <= 15 and scores > 0:
+        return "Mal deservi"
+    else:
+        return "Pas deservi"
+    
+
 # print(telecharger('https://www.openstreetmap.org/api/0.6/node/3649697385',"fichier.html"))
 #print(get_node_name(1947604611))
-print(node_to_md(12534300884))
-#print(arretbus("caen"))
+# print(node_to_md(12534300884))
+
+villes_a_tester = ["Caen", "Le Mans", "Paris", "Rennes", "Bordeaux", "Strasbourg", "Nantes"]
+
+for v in villes_a_tester:
+    print(f"\n--- Evaluation de {v} ---")
+    print(evaluation(v))
 '''
 https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];
     area["wikipedia"="fr:Caen"]->.searchArea;
