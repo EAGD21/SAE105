@@ -201,15 +201,20 @@ def evaluation(ville):
         d['etat'] = "Pas desservi"
     
     txt = ""
-    txt += f"# Statistiques concernant les transports en commun dans les villes  \n\n\n"
-    txt += f" - **Ville:** {ville}  \n\n"
+    txt += f"# -- Statistiques concernant {ville} --  \n\n\n"
     txt += f" - **Au niveau des transport en commun, cette ville est {d['etat']}**  \n\n"
     txt += f" - **Au total, cette ville a {d['total']} arrêts**  \n\n"
     txt += f" - **Parmis ces arrêts, il y a {d['nb_bus']} arrêts de bus**  \n\n"
     txt += f" - **Parmis ces arrêts, il y a {d['nb_tram']} arrêts de tram**  \n\n"
     txt += f" - **Parmis ces arrêts, il y a {d['nb_metro']} arrêts de métro**  \n\n"
+    try:
+        with open('file2.md','r') as f:
+            text = f.read()
+        texte = text + txt
+    except:
+        pass
     with open('file2.md','w') as f:
-        f.write(txt)
+        f.write(texte)
     convert2()
 
 
@@ -217,15 +222,15 @@ def evaluation(ville):
 #print(get_node_name(1947604611))
 #print(node_to_md(12534300884))
 
-print(evaluation('caen'))
-
-'''
 villes_a_tester = ["Caen", "Le Mans", "Paris", "Rennes", "Bordeaux", "Strasbourg", "Nantes"]
+reset = ''
+with open('file2.md','w') as f:
+    f.write(reset)
 
 for v in villes_a_tester:
     print(f"\n--- Evaluation de {v} ---")
     print(evaluation(v))
-'''
+
 '''
 https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];
     area["wikipedia"="fr:Caen"]->.searchArea;
