@@ -1,4 +1,5 @@
 from md_to_html import convert
+from md_to_html import convert2
 import time
 import requests
 
@@ -67,7 +68,8 @@ def evaluation(ville):
     nb_bus = 0
     nb_tram = 0
     nb_metro = 0
-    
+    d = {}
+
     # First Request (Bus stops)
     api_url = "https://overpass-api.de/api/interpreter"
     request = f"""
@@ -182,27 +184,48 @@ def evaluation(ville):
     
     print(f"Total arrets: {total} (Bus: {nb_bus}, Tram: {nb_tram}, Metro: {nb_metro}), Superficie: {superficie}, Score: {scores}")
 
+    d['total'] = total
+    d['nb_bus'] = nb_bus
+    d['nb_tram'] = nb_tram
+    d['nb_metro'] = nb_metro
+
     if scores > 50:
-        return "Très bien deservi"
+        d['etat'] = "Très bien desservi"
     elif scores <= 50 and scores > 25:
-        return "Bien deservi"
+        d['etat'] = "Bien desservi"
     elif scores <= 25 and scores > 15:
-        return "Moyennement deservi"
+        d['etat'] = "Moyennement desservi"
     elif scores <= 15 and scores > 0:
-        return "Mal deservi"
+        d['etat'] = "Mal desservi"
     else:
-        return "Pas deservi"
+        d['etat'] = "Pas desservi"
     
+    txt = ""
+    txt += f"# Statistiques concernant les transports en commun dans les villes  \n\n\n"
+    txt += f" - **Ville:** {ville}  \n\n"
+    txt += f" - **Au niveau des transport en commun, cette ville est {d['etat']}**  \n\n"
+    txt += f" - **Au total, cette ville a {d['total']} arrêts**  \n\n"
+    txt += f" - **Parmis ces arrêts, il y a {d['nb_bus']} arrêts de bus**  \n\n"
+    txt += f" - **Parmis ces arrêts, il y a {d['nb_tram']} arrêts de tram**  \n\n"
+    txt += f" - **Parmis ces arrêts, il y a {d['nb_metro']} arrêts de métro**  \n\n"
+    with open('file2.md','w') as f:
+        f.write(txt)
+    convert2()
+
 
 # print(telecharger('https://www.openstreetmap.org/api/0.6/node/3649697385',"fichier.html"))
 #print(get_node_name(1947604611))
-# print(node_to_md(12534300884))
+#print(node_to_md(12534300884))
 
+print(evaluation('caen'))
+
+'''
 villes_a_tester = ["Caen", "Le Mans", "Paris", "Rennes", "Bordeaux", "Strasbourg", "Nantes"]
 
 for v in villes_a_tester:
     print(f"\n--- Evaluation de {v} ---")
     print(evaluation(v))
+'''
 '''
 https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];
     area["wikipedia"="fr:Caen"]->.searchArea;
