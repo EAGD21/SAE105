@@ -53,10 +53,15 @@ def get_node(id):
     return data
 
 def node_to_md(id):
-    data = get_node(id)
+
+    #headers = {"User-Agent": "CityDataScript/1.0 (contact@example.org)"}
+    #wp_res = requests.get(f"https://tile.openstreetmap.org/{data[2]}/{data[3]}/15.png")
+    
+    data = print_node_attributes(id)
     n = len(data)
     txt = ""
     txt += f"# Type: {data[0]}  \n# ID: {data[1]}  \n# Latitude: {data[2]}  \n# Longitude: {data[3]}  \n\n\n"
+    txt += f"[map](https://tile.openstreetmap.org/{data[2]}/{data[3]}/15.png) \n\n"
     for i in range(4,n):
         txt += f" - **{data[i][0]}:** {data[i][1]}  \n\n"
     with open('file.md','w') as f:
@@ -241,4 +246,5 @@ https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];
     area["wikipedia"="fr:Caen"]->.searchArea;
     nwr["highway"="bus_stop"](area.searchArea);
     out geom;.json
+
 '''
