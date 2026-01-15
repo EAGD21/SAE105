@@ -206,7 +206,10 @@ def evaluation(ville):
     txt += f" - **Au total, cette ville a {d['total']} arrêts.**  \n\n"
     txt += f" - **Parmis ces arrêts, il y a {d['nb_bus']} arrêts de bus.**  \n\n"
     txt += f" - **Parmis ces arrêts, il y a {d['nb_tram']} arrêts de tram.**  \n\n"
-    txt += f" - **Parmis ces arrêts, il y a {d['nb_metro']} arrêts de métro.**  \n\n"
+    if d['nb_metro'] > 0:
+        txt += f" - **Parmis ces arrêts, il y a {d['nb_metro']} arrêts de métro.**  \n\n"
+    else:
+        txt += f" - **Parmis ces arrêts, il n'y a pas d'arrêts de métro.**  \n\n"
     try:
         with open('file2.md','r') as f:
             text = f.read()
@@ -220,7 +223,6 @@ def evaluation(ville):
 
 print(node_to_md(12534300884))
 
-'''
 # print(telecharger('https://www.openstreetmap.org/api/0.6/node/3649697385',"fichier.html"))
 #print(get_node_name(1947604611))
 #print(node_to_md(12534300884))
@@ -233,7 +235,8 @@ with open('file2.md','w') as f:
 for v in villes_a_tester:
     print(f"\n--- Evaluation de {v} ---")
     print(evaluation(v))
-
+    
+'''
 https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];
     area["wikipedia"="fr:Caen"]->.searchArea;
     nwr["highway"="bus_stop"](area.searchArea);
