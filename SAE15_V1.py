@@ -14,7 +14,7 @@ import requests
 #element = donnees.get("elements")[0]
 #json_data = element.get("tags").get("name"),element.get("lat"),element.get("lon")
 
-
+'''
 def telecharger(l,d):
     g = requests.get(l)
     r = g.text
@@ -32,6 +32,7 @@ def get_node_name(id):
     except:
         json_data = "SANS NOM"
     return json_data
+'''
 
 def get_node(id):
     api_url = f"https://www.openstreetmap.org/api/0.6/node/{id}.json"
@@ -189,23 +190,23 @@ def evaluation(ville):
     d['nb_metro'] = nb_metro
 
     if scores > 50:
-        d['etat'] = "Très bien desservi"
+        d['etat'] = "très bien desservie"
     elif scores <= 50 and scores > 25:
-        d['etat'] = "Bien desservi"
+        d['etat'] = "bien desservie"
     elif scores <= 25 and scores > 15:
-        d['etat'] = "Moyennement desservi"
+        d['etat'] = "moyennement desservie"
     elif scores <= 15 and scores > 0:
-        d['etat'] = "Mal desservi"
+        d['etat'] = "mal desservie"
     else:
-        d['etat'] = "Pas desservi"
+        d['etat'] = "pas desservie"
     
     txt = ""
     txt += f"# -- Statistiques concernant {ville} --  \n\n\n"
-    txt += f" - **Au niveau des transport en commun, cette ville est {d['etat']}**  \n\n"
-    txt += f" - **Au total, cette ville a {d['total']} arrêts**  \n\n"
-    txt += f" - **Parmis ces arrêts, il y a {d['nb_bus']} arrêts de bus**  \n\n"
-    txt += f" - **Parmis ces arrêts, il y a {d['nb_tram']} arrêts de tram**  \n\n"
-    txt += f" - **Parmis ces arrêts, il y a {d['nb_metro']} arrêts de métro**  \n\n"
+    txt += f" - **Au niveau des transport en commun, cette ville est {d['etat']}.**  \n\n"
+    txt += f" - **Au total, cette ville a {d['total']} arrêts.**  \n\n"
+    txt += f" - **Parmis ces arrêts, il y a {d['nb_bus']} arrêts de bus.**  \n\n"
+    txt += f" - **Parmis ces arrêts, il y a {d['nb_tram']} arrêts de tram.**  \n\n"
+    txt += f" - **Parmis ces arrêts, il y a {d['nb_metro']} arrêts de métro.**  \n\n"
     try:
         with open('file2.md','r') as f:
             text = f.read()
