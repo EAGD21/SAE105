@@ -1,15 +1,50 @@
-# Statistiques concernant les transports en commun dans les villes  
+# Type: node  
+# ID: 12534300884  
+# Latitude: 49.1761575  
+# Longitude: -0.3479804  
 
 
- - **Ville:** Caen  
+ - **amenity:** bicycle_rental  
 
- - **Au niveau des transport en commun, cette ville est Très bien desservi**  
+ - **authentication:app:** yes  
 
- - **Au total, cette ville a 1856 arrêts**  
+ - **authentication:membership_card:** yes  
 
- - **Parmis ces arrêts, il y a 1785d'arrêts de bus**  
+ - **bicycle_rental:** docking_station  
 
- - **Parmis ces arrêts, il y a 71d'arrêts de tram**  
+ - **capacity:** 20  
 
- - **Parmis ces arrêts, il y a 0d'arrêts de métro**  
+ - **charge:** 1.00 EUR/hour  
+
+ - **contact:email:** support.velolib@twisto.fr  
+
+ - **contact:opening_hours:** Mo-Fr 08:00-20:00; Sa,Su 10:00-13:00,13:30-18:30  
+
+ - **contact:phone:** +33 9 74 99 33 78  
+
+ - **fee:** yes  
+
+ - **manufacturer:** Fifteen  
+
+ - **manufacturer:wikidata:** Q3487061  
+
+ - **name:** Gare Sud  
+
+ - **network:** Vélolib  
+
+ - **network:website:** https://velolib.twisto.fr  
+
+ - **opening_hours:** 24/7  
+
+ - **operator:** Twisto  
+
+ - **operator:wikidata:** Q3537947  
+
+ - **ref:** ctq0fme82ttmd6g9m9lg  
+
+ - **rental:** ebike  
+
+ - **rental:deposit:** 25 EUR  
+
+ - **reservation:** yes  
 

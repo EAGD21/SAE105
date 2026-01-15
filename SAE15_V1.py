@@ -33,7 +33,7 @@ def get_node_name(id):
         json_data = "SANS NOM"
     return json_data
 
-def print_node_attributes(id):
+def get_node(id):
     api_url = f"https://www.openstreetmap.org/api/0.6/node/{id}.json"
     response = requests.get(api_url)
     donnees = response.json()
@@ -52,7 +52,7 @@ def print_node_attributes(id):
     return data
 
 def node_to_md(id):
-    data = print_node_attributes(id)
+    data = get_node(id)
     n = len(data)
     txt = ""
     txt += f"# Type: {data[0]}  \n# ID: {data[1]}  \n# Latitude: {data[2]}  \n# Longitude: {data[3]}  \n\n\n"
@@ -61,6 +61,7 @@ def node_to_md(id):
     with open('file.md','w') as f:
         f.write(txt)
     convert()
+
 
 def evaluation(ville):
     ville = ville.title()
@@ -182,8 +183,6 @@ def evaluation(ville):
     superficie = float(results[0].get("superficie").get("value"))
     scores = total / superficie
     
-    print(f"Total arrets: {total} (Bus: {nb_bus}, Tram: {nb_tram}, Metro: {nb_metro}), Superficie: {superficie}, Score: {scores}")
-
     d['total'] = total
     d['nb_bus'] = nb_bus
     d['nb_tram'] = nb_tram
@@ -218,6 +217,9 @@ def evaluation(ville):
     convert2()
 
 
+print(node_to_md(12534300884))
+
+'''
 # print(telecharger('https://www.openstreetmap.org/api/0.6/node/3649697385',"fichier.html"))
 #print(get_node_name(1947604611))
 #print(node_to_md(12534300884))
@@ -231,7 +233,6 @@ for v in villes_a_tester:
     print(f"\n--- Evaluation de {v} ---")
     print(evaluation(v))
 
-'''
 https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];
     area["wikipedia"="fr:Caen"]->.searchArea;
     nwr["highway"="bus_stop"](area.searchArea);
