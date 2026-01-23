@@ -192,8 +192,6 @@ def evaluation(ville):
     convert2()
 
 
-print(node_to_md(12534300884))
-
 # print(telecharger('https://www.openstreetmap.org/api/0.6/node/3649697385',"fichier.html"))
 #print(get_node_name(1947604611))
 #print(node_to_md(12534300884))

@@ -44,4 +44,8 @@ def generate_map(lat,lon): # difficulté dans l'ajout et l'utilisation de la map
 
 def fiche_osm(id):
     node_to_md(id)
-    convert()
+    convert('fiche_lieu')
+
+if __name__ == '__main__':
+    id = sys.argv[1]
+    fiche_osm(id)
